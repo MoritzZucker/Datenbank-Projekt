@@ -1,0 +1,23 @@
+
+To-Do:
+
+SELECT * FROM filme JOIN ausleihen ON filme.filmnummer=ausleihen.filmnummer;
+
+
+
+
+
+
+
+erledigt:
+
+"SELECT * FROM filme;"
+"INSERT INTO filme (filmname, beschreibung, schauspieler, regie, genre, kosten) VALUES (?,?,?,?,?,?);";
+"SELECT * FROM kunden;"
+"INSERT INTO kunden (vorname, nachname, strasse, plz, stadt) VALUES (?,?,?,?,?);";
+"SELECT * FROM ausleihen;"
+"SELECT kosten FROM filme WHERE filmnummer = " + filmnummer;"
+"INSERT INTO ausleihen (filmnummer, kundennummer, ausleihdatum, rueckgabedatum ,kosten) VALUES (?,?,?,?,?);"
+mit JOIN:
+"SELECT kunden.vorname, kunden.nachname, filme.filmname FROM filme INNER JOIN ausleihen ON filme.filmnummer=ausleihen.filmnummer INNER JOIN kunden ON kunden.kundennummer=ausleihen.kundennummer;"
+"SELECT ausleihen.kosten, kunden.vorname, kunden.nachname FROM ausleihen JOIN kunden ON kunden.kundennummer = ausleihen.kundennummer;"

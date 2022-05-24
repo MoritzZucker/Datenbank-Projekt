@@ -1,0 +1,48 @@
+.App {
+  text-align: center;
+}
+
+.film {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.film input {
+  width: 300px;
+  height: 20px;
+  margin: 10px;
+}
+
+.kunde {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+}
+
+.kunde input {
+  width: 300px;
+  height: 20px;
+  margin: 10px;
+
+}
+
+.tabelle {
+text-align: center;
+margin-left: auto;
+margin-right: auto;
+}
+
+
+.ausleihen {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.ausleihen input {
+  width: 300px;
+  height: 20px;
+  margin: 10px;
+}
