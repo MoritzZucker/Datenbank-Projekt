@@ -5,6 +5,7 @@ const cors = require('cors');
 var connection = require('./database');
 const { query } = require("express");
 var varKosten = 0;
+var kategorie = "";
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -13,7 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 
 app.get("/filme/get", function(req,res) {
-    const sqlGet = "SELECT * FROM filme;"
+    const sqlGet = "SELECT * FROM film;"
     connection.query(sqlGet, (err, result) =>{
         res.send(result);
     });
@@ -21,29 +22,54 @@ app.get("/filme/get", function(req,res) {
 app.post("/filme/insert", (req, res)=>{
     const filmName = req.body.filmName;
     const beschreibung = req.body.beschreibung;
-    const schauspieler = req.body.schauspieler;
     const regie = req.body.regie;
+    const kategorieName = req.body.kategorieName;
+    const sqlInsert = "INSERT INTO film (filmName, beschreibung, regie, kategorieName) VALUES (?,?,?,?);";
+    connection.query(sqlInsert, [filmName, beschreibung, regie, kategorieName], (err, result)=>{
+        console.log(err);
+    })
+
+});
+app.post("/genre/insert", (req, res)=>{
     const genre = req.body.genre;
-    const kosten = req.body.kosten;
-    const sqlInsert = "INSERT INTO filme (filmname, beschreibung, schauspieler, regie, genre, kosten) VALUES (?,?,?,?,?,?);";
-    connection.query(sqlInsert, [filmName, beschreibung, schauspieler, regie, genre, kosten], (err, result)=>{
+    const sqlInsert = "INSERT INTO genre (genreName) VALUES (?);";
+    connection.query(sqlInsert, [genre], (err, result)=>{
+        console.log(err);
+    })
+
+});
+app.post("/schauspieler/insert", (req, res)=>{
+    const schauspieler = req.body.schauspieler;
+    const sqlInsert = "INSERT INTO schauspieler (schauspielerName) VALUES (?);";
+    connection.query(sqlInsert, [schauspieler], (err, result)=>{
+        console.log(err);
+    })
+
+});
+app.get("/kunde/get", function(req,res) {
+    const sqlGet = "SELECT * FROM kunde;"
+    connection.query(sqlGet, (err, result) =>{
+        res.send(result);
+       // console.log(result);
+    });
+});
+app.post("/kunde/insert", (req, res)=>{
+    const vorname = req.body.vorname;
+    const nachname = req.body.nachname;
+    const email = req.body.email;
+
+    const sqlInsert = "INSERT INTO kunde (vorname, nachname, email) VALUES (?,?,?);";   
+    connection.query(sqlInsert, [vorname, nachname, email], (err, result)=>{
         console.log(err);
     })
 });
-app.get("/kunden/get", function(req,res) {
-    const sqlGet = "SELECT * FROM kunden;"
-    connection.query(sqlGet, (err, result) =>{
-        res.send(result);
-    });
-});
-app.post("/kunden/insert", (req, res)=>{
-    const vorname = req.body.vorname;
-    const nachname = req.body.nachname;
+app.post("/kundenAdresse/insert", (req, res)=>{
+    const plz = req.body.plt;
     const strasse = req.body.strasse;
-    const plz = req.body.plz;
-    const stadt = req.body.stadt;
-    const sqlInsert = "INSERT INTO kunden (vorname, nachname, strasse, plz, stadt) VALUES (?,?,?,?,?);";
-    connection.query(sqlInsert, [vorname, nachname, strasse, plz, stadt], (err, result)=>{
+    const stadt = req.body.email;
+
+    const sqlInsert = "INSERT INTO adresse (plz, strasse, stadt) VALUES (?,?,?);";   
+    connection.query(sqlInsert, [plz, strasse, stadt], (err, result)=>{
         console.log(err);
     })
 });
@@ -54,55 +80,68 @@ app.get("/ausleihen/get", function(req,res) {
     });
 });
 app.post("/ausleihen/insert", async function(req, res){
-    const filmnummer = req.body.filmnummer;
+    var kategorieName = req.body.kategorieName;
+    const filmID = req.body.filmID;
 
     get_kosten(ausleihen);
 
      function get_kosten(ausleihen){
-        var sql = "SELECT kosten FROM filme WHERE filmnummer = ' " + filmnummer+" ' ";
-    connection.query(sql, (err, res)=>{
-         if(err)throw err;
-            varKosten = JSON.parse(JSON.stringify(res[0].kosten));
-            //console.log(varKosten);
-            return varKosten;
-      });
+        var sql = "SELECT kategorieName FROM film WHERE filmID = ' " + filmID + " ' ";
+
+        connection.query(sql, (err, res)=>{
+             if(err)throw err;
+               kategorie = JSON.parse(JSON.stringify(res[0].kategorieName));
+              // console.log(kategorieName);       
+              getZahl(kategorie);
+          });
+         
    //   console.log(varKosten);
       ausleihen();
     }
-
+    function getZahl(kategorie){
+        var sql1 = "SELECT * FROM kategorie WHERE kategorieName = ' " + kategorie + " ';";
+        console.log(kategorie);
+        connection.query(sql1, kategorie, (error, result)=>{
+          if(error)throw error;
+         //varKosten = JSON.parse(JSON.stringify(res[0].preis));
+          console.log(result);
+          return varKosten;
+         })
+      }
     function ausleihen(){
-        const kundennummer = req.body.kundennummer;
-        const ausleihdatum = req.body.ausleihdatum;
-        const rueckgabedatum = req.body.rueckgabedatum;
-        const ausleihdatum1 = new Date(req.body.ausleihdatum).valueOf();
-        const rueckgabedatum1 = new Date(req.body.rueckgabedatum).valueOf();
-        const diff = Math.abs(rueckgabedatum1-ausleihdatum1);
+        const kundenID = req.body.kundenID;
+        const filmID = req.body.filmID;
+        const ausleihDatum = req.body.ausleihDatum;
+        const rueckgabeDatum = req.body.rueckgabeDatum;
+        const ausleihDatum1 = new Date(req.body.ausleihDatum).valueOf();
+        const rueckgabeDatum1 = new Date(req.body.rueckgabeDatum).valueOf();
+        const diff = Math.abs(rueckgabeDatum1-ausleihDatum1);
         const diffDays = Math.ceil(diff / (1000*60*60*24));
-        const kosten = diffDays*varKosten;
+        const kosten = diffDays*5;
 
-    console.log(varKosten);
-    console.log(diffDays);
-    console.log(kosten);
+    //console.log(varKosten);
+    //console.log(diffDays);
+    //console.log(kosten);
 
-    const sqlInsert = "INSERT INTO ausleihen (filmnummer, kundennummer, ausleihdatum, rueckgabedatum ,kosten) VALUES (?,?,?,?,?);";
-    connection.query(sqlInsert, [filmnummer, kundennummer, ausleihdatum, rueckgabedatum ,kosten], (err, result)=>{
-        console.log(err);
+    const sqlInsert = "INSERT INTO ausleihen (filmID, kundenID, ausleihDatum, rueckgabeDatum, kosten) VALUES (?,?,?,?,?);";
+    connection.query(sqlInsert, [filmID, kundenID, ausleihDatum, rueckgabeDatum, kosten], (err, result)=>{
+       // console.log(err);
     });
    }
    
    
 });
 
-app.get("/suche/filmnummer", function(req,res) {
-    const sucheMitFilmnummer = req.body.sucheMitFilmnummer;
-    const sqlGet = "SELECT kunden.vorname, kunden.nachname, filme.filmname FROM filme INNER JOIN ausleihen ON filme.filmnummer=ausleihen.filmnummer INNER JOIN kunden ON kunden.kundennummer=ausleihen.kundennummer;";
+app.get("/suche/filmID", function(req,res) {
+    const sucheMitfilmID = req.body.sucheMitfilmID;
+    const sqlGet = "SELECT kunde.vorname, kunde.nachname, film.filmname FROM film INNER JOIN ausleihen ON film.filmID=ausleihen.filmID INNER JOIN kunde ON kunde.kundenID=ausleihen.kundenID;";
     connection.query(sqlGet, (err, result) =>{
         res.send(result);
     });
 });
 
 app.get("/kosten/kunde", function(req,res) {
-    const sqlGet = "SELECT ausleihen.kosten, kunden.vorname, kunden.nachname FROM ausleihen JOIN kunden ON kunden.kundennummer = ausleihen.kundennummer;";
+    const sqlGet = "SELECT ausleihen.kosten, kunde.vorname, kunde.nachname FROM ausleihen JOIN kunde ON kunde.kundenID = ausleihen.kundenID;";
     connection.query(sqlGet, (err, result) =>{
         res.send(result);
     });
