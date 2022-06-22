@@ -2,6 +2,8 @@
 
 Frontend:
 npm install
+starten: npm start
 
 Backend:
-npm install express body-parser mysql nodemon
+npm install 
+starten: nodemon index.js
