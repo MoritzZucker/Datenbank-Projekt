@@ -64,9 +64,9 @@ app.post("/kunde/insert", (req, res)=>{
     })
 });
 app.post("/kundenAdresse/insert", (req, res)=>{
-    const plz = req.body.plt;
+    const plz = req.body.plz;
     const strasse = req.body.strasse;
-    const stadt = req.body.email;
+    const stadt = req.body.stadt;
 
     const sqlInsert = "INSERT INTO adresse (plz, strasse, stadt) VALUES (?,?,?);";   
     connection.query(sqlInsert, [plz, strasse, stadt], (err, result)=>{
