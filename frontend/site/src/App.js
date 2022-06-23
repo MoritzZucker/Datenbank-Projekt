@@ -11,6 +11,7 @@ function App() {
   const [genre, setGenre] = useState("");
   const [kategorieName, setkategorieName] = useState("");
   const [filmListe, setFilmListe] = useState([]);
+  const [genreSchauspielerListe, setSchauspielerAction] = useState([]);
 
 
   const [vorname, setVorName] = useState("");
@@ -57,6 +58,11 @@ function App() {
       alert("erfolgreich eingetragen");
     });
   }
+  useEffect(()=>{
+    Axios.get('http://localhost:3001/schauspieler/get').then((response)=>{
+      setSchauspielerAction(response.data);
+    });
+  }, []);
 
 
   useEffect(()=>{
@@ -327,7 +333,52 @@ function App() {
                     </th>
                     </tr>
               </table>
+  <h1>Liste der Kunden Kosten:</h1>
 
+       <table className="tabelle">
+                    <tr>
+                    <th><h2>Kundenvorname</h2></th>
+                    <th><h2>Kundennachname</h2></th>
+                    <th><h2>Kosten</h2></th>
+
+                    </tr>
+                    <tr>
+                      
+                    <th>{kundenKosten.map((val)=>{
+                        return (
+                            <h4>{val.vorname}</h4> 
+                          );
+                         })}
+                    </th>
+                    <th>
+                    {kundenKosten.map((val)=>{
+                        return (
+                            <h4>{val.nachname} </h4> 
+                          );
+                         })}
+                    </th>
+                    <th>
+                    {kundenKosten.map((val)=>{
+                        return (
+                            <h4>{val.kosten} </h4> 
+                          );
+                         })}
+                    </th>
+                    </tr>
+              </table>
+              <h1>Liste der Schauspieler von Actionfilmen:</h1>
+
+<table className="tabelle">
+             <tr>
+             <th>{genreSchauspielerListe.map((val)=>{
+                 return (
+                     <h4>{val.schauspielerName}</h4> 
+                   );
+                  })}
+             </th>
+
+             </tr>
+       </table>
     </div>
   );
 }

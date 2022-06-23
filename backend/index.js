@@ -46,6 +46,12 @@ app.post("/schauspieler/insert", (req, res)=>{
     })
 
 });
+app.get("/schauspieler/get", function(req,res) {
+    const sqlGet = "SELECT schauspielerName FROM schauspieler, genre WHERE schauspieler.filmID = genre.filmID AND genreName = 'Action' GROUP BY schauspielerName;"
+    connection.query(sqlGet, (err, result) =>{
+        res.send(result);
+    });
+});
 app.get("/kunde/get", function(req,res) {
     const sqlGet = "SELECT * FROM kunde;"
     connection.query(sqlGet, (err, result) =>{
